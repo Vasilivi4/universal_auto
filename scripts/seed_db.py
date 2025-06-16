@@ -3,15 +3,17 @@ from datetime import timedelta, datetime
 
 from django.db import IntegrityError
 
-from app.models import Driver, Vehicle, Fleets_drivers_vehicles_rate, BoltFleet, UberFleet, NewUklonFleet, \
-    DriverRateLevels, NinjaFleet, SummaryReport, CarEfficiency
+from app.models import Driver, Vehicle, Fleets_drivers_vehicles_rate, NinjaFleet, SummaryReport, CarEfficiency, Fleet, \
+    Partner
+
+partner = Partner.objects.first()
 
 DRIVERS_MAP = {
     'fleets': [
-        {'name': 'Uber', 'model': UberFleet, 'min_fee': 3000},
-        {'name': 'Bolt', 'model': BoltFleet, 'min_fee': 4000},
-        {'name': 'Uklon', 'model': NewUklonFleet, 'min_fee': 6000},
-        {'name': 'Ninja', 'model': NinjaFleet, 'min_fee': 6000},
+        {'name': 'Uber', 'model': Fleet, 'min_fee': 3000},
+        {'name': 'Bolt', 'model': Fleet, 'min_fee': 4000},
+        {'name': 'Uklon', 'model': Fleet, 'min_fee': 6000},
+        {'name': 'Ninja', 'model': Fleet, 'min_fee': 6000},
     ],
     'drivers': [
         {
@@ -146,12 +148,13 @@ def init_models():
                                        licence_plate=item['vehicle']['licence_plate'],
                                        vin_code=item['vehicle']['vin_code'],
                                        name=item['vehicle']['name'],
-
+                                       partner=partner
                                        )
         driver = get_or_create_object(Driver, ['name', 'second_name'],
                                       name=item['name'],
                                       second_name=item['second_name'],
-                                      vehicle=vehicle
+                                      vehicle=vehicle,
+                                      partner=partner
                                       )
         for rate in item['fleets_drivers_vehicles_rate']:
             print('+++++++++++++++++++++++++++++++++++++')
@@ -160,15 +163,9 @@ def init_models():
                                  ['fleet', 'driver'],
                                  fleet=fleets[rate['fleet']],
                                  driver=driver,
-                                 vehicle=vehicle,
+                                 partner=partner,
                                  driver_external_id=rate['driver_external_id'],
                                  )
-    for item in DRIVERS_MAP['driver_rate_levels']:
-        get_or_create_object(DriverRateLevels, ['fleet', 'threshold_value']
-                             , fleet=fleets[item['fleet']]
-                             , threshold_value=item['threshold_value']
-                             , rate_delta=item['rate_delta']
-                             )
 
 
 def generate_random_amount(min_value, max_value):
@@ -186,11 +183,10 @@ def generate_reports():
     today = datetime.now().date()
 
     drivers_data = DRIVERS_MAP['drivers']
-
     for driver_data in drivers_data:
         for i in range(7):
             report_from = today - timedelta(days=i)
-            full_name = f"{driver_data['name']} {driver_data['second_name']}"
+            driver = Driver.objects.get(name=driver_data['name'], second_name=driver_data['second_name'])
             total_amount_without_fee = generate_random_amount(500, 5000)
             total_amount_cash = generate_random_amount(50, 150)
             total_amount_on_card = round(total_amount_without_fee - total_amount_cash, 2)
@@ -201,9 +197,9 @@ def generate_reports():
 
             summary_report = get_or_create_object(
                 SummaryReport,
-                ['report_from', 'full_name'],
+                ['report_from', 'driver'],
                 report_from=report_from,
-                full_name=full_name,
+                driver=driver,
                 total_amount_without_fee=total_amount_without_fee,
                 total_amount_cash=total_amount_cash,
                 total_amount_on_card=total_amount_on_card,
@@ -211,6 +207,7 @@ def generate_reports():
                 total_rides=total_rides,
                 total_distance=total_distance,
                 fee=fee,
+                partner=partner
             )
             summary_report.save()
 
@@ -224,19 +221,14 @@ def update_car_efficiency():
     for report in summary_reports:
         total_amount = report.total_amount
         total_distance = report.total_distance
-
-        try:
-            driver = Driver.objects.get(name=report.full_name.split()[0], second_name=report.full_name.split()[1])
-            vehicle = driver.vehicle
-
-        except Driver.DoesNotExist:
-            vehicle = None
+        vehicle = random.randint(1, 7)
 
         efficiency = calculate_efficiency(total_amount, total_distance)
 
         car_efficiency, created = CarEfficiency.objects.get_or_create(
             report_from=report.report_from,
-            vehicle=vehicle,
+            vehicle_id=vehicle,
+            partner=partner,
             defaults={
                 'total_kasa': total_amount,
                 'mileage': total_distance,

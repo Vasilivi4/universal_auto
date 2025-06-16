@@ -14,20 +14,20 @@ class PartnerFilterMixin:
 
 class ManagerFilterMixin:
     def get_queryset(self, model):
-        user = self.request.user
-
-        model_filter_map = {
-            SummaryReport: (Q(driver__in=Driver.objects.filter(manager__user=user)) | Q(partner__user=user)),
-            CarEfficiency: (Q(vehicle__manager__user=user) | Q(partner__user=user)),
-            DriverEfficiency: (Q(driver__manager__user=user) | Q(partner__user=user)),
-            Vehicle: (Q(manager__user=user) | Q(partner__user=user)),
-        }
-
-        filter_condition = model_filter_map.get(model)
-        if filter_condition:
-            queryset = model.objects.filter(filter_condition)
-        else:
-            queryset = model.objects.none()
+        # user = None
+        #
+        # model_filter_map = {
+        #     # SummaryReport: (Q(driver__in=Driver.objects.filter(manager__user=user)) | Q(partner__user=user)),
+        #     CarEfficiency: (Q(vehicle__manager__user=user) | Q(partner__user=user)),
+        #     DriverEfficiency: (Q(driver__manager__user=user) | Q(partner__user=user)),
+        #     Vehicle: (Q(manager__user=user) | Q(partner__user=user)),
+        # }
+        #
+        # filter_condition = model_filter_map.get(model)
+        # if filter_condition:
+        #     queryset = model.objects.filter(filter_condition)
+        # else:
+        queryset = model.objects.all()
 
         return queryset
 
@@ -44,16 +44,17 @@ class InvestorFilterMixin:
 
 
 class CombinedPermissionsMixin:
-    authentication_classes = [authentication.SessionAuthentication,
-                              TokenAuthentication]
-
-    def get_permissions(self):
-        permissions = [
-            IsManagerUser().has_permission(self.request, self),
-            IsPartnerUser().has_permission(self.request, self),
-            IsInvestorUser().has_permission(self.request, self),
-        ]
-
-        for i, permission in enumerate(permissions):
-            if permission:
-                return [[IsManagerUser()], [IsPartnerUser()], [IsInvestorUser()]][i]
+    pass
+    # authentication_classes = [authentication.SessionAuthentication,
+    #                           TokenAuthentication]
+    #
+    # def get_permissions(self):
+    #     permissions = [
+    #         IsManagerUser().has_permission(self.request, self),
+    #         IsPartnerUser().has_permission(self.request, self),
+    #         IsInvestorUser().has_permission(self.request, self),
+    #     ]
+    #
+    #     for i, permission in enumerate(permissions):
+    #         if permission:
+    #             return [[IsManagerUser()], [IsPartnerUser()], [IsInvestorUser()]][i]

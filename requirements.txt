@@ -24,7 +24,7 @@ honcho
 redis==4.6
 asyncpg
 psycopg2-binary
-dj-database-url
+dj-database-url==2.3
 pytest==7.1.3
 pytest-django==4.5.2
 django-polymorphic

@@ -17,7 +17,7 @@ from taxi_service.utils import get_dates
 
 # Create your views here.
 
-class SummaryReportListView(CombinedPermissionsMixin,
+class SummaryReportListView(
                             ManagerFilterMixin,
                             generics.ListAPIView):
     serializer_class = SummaryReportSerializer
@@ -55,7 +55,7 @@ class SummaryReportListView(CombinedPermissionsMixin,
         return [{'total_rent': total_rent, 'start': format_start, 'end': format_end, 'drivers': queryset}]
 
 
-class InvestorCarsEarningsView(CombinedPermissionsMixin,
+class InvestorCarsEarningsView(
                                generics.ListAPIView):
     serializer_class = InvestorCarsSerializer
 
@@ -86,7 +86,7 @@ class InvestorCarsEarningsView(CombinedPermissionsMixin,
         return [{'start': format_start, 'end': format_end, 'car_earnings': qs, 'totals': total_qs}]
 
 
-class CarEfficiencyListView(CombinedPermissionsMixin,
+class CarEfficiencyListView(
                             generics.ListAPIView):
     serializer_class = CarEfficiencySerializer
 
@@ -131,7 +131,7 @@ class CarEfficiencyListView(CombinedPermissionsMixin,
         return Response(response_data)
 
 
-class DriverEfficiencyListView(CombinedPermissionsMixin,
+class DriverEfficiencyListView(
                                generics.ListAPIView):
     serializer_class = DriverEfficiencyRentSerializer
 
@@ -166,7 +166,7 @@ class DriverEfficiencyListView(CombinedPermissionsMixin,
         return [{'start': format_start, 'end': format_end, 'drivers_efficiency': qs}]
 
 
-class CarsInformationListView(CombinedPermissionsMixin,
+class CarsInformationListView(
                               generics.ListAPIView):
     serializer_class = CarDetailSerializer
 
