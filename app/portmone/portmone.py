@@ -7,6 +7,7 @@ logger = logging.getLogger("portmone")
 
 class GatewayError(Exception):
     """Raised when API http request failed."""
+
     pass
 
 
@@ -14,11 +15,11 @@ class StatusCodeError(Exception):
     """Raised when API returns non-200 status code."""
 
 
-class Portmone():
+class Portmone:
     def __init__(self, sum=None, commission=None, **kwargs):
         self.sum = sum
         self.commission = commission
-        self.url = 'https://www.portmone.com.ua/gateway/'
+        self.url = "https://www.portmone.com.ua/gateway/"
         self.login = os.environ["PORTMONE_LOGIN"]
         self.password = os.environ["PORTMONE_PASSWORD"]
         self.payee_id = os.environ["PORTMONE_PAYEE_ID"]
@@ -53,18 +54,18 @@ class Portmone():
                 "token": "N",
                 "privat": "Y",
                 "gpay": "Y",
-                "card": "Y"
+                "card": "Y",
             },
             "payee": {
                 "payeeId": self.payee_id,
                 "login": self.login,
                 "dt": "",
                 "signature": "",
-                "shopSiteId": ""
+                "shopSiteId": "",
             },
             "order": {
-                "description": self.data.get('payment_description', ''),
-                "shopOrderNumber": self.data.get('order_id'),
+                "description": self.data.get("payment_description", ""),
+                "shopOrderNumber": self.data.get("order_id"),
                 "billAmount": self.sum,
                 "attribute1": "",
                 "attribute2": "",
@@ -75,93 +76,80 @@ class Portmone():
                 "failureUrl": "",
                 "preauthFlag": "N",
                 "billCurrency": "UAH",
-                "encoding": ""
+                "encoding": "",
             },
             "token": {
                 "tokenFlag": "N",
                 "returnToken": "Y",
                 "token": "",
                 "cardMask": "",
-                "otherPaymentMethods": ""
+                "otherPaymentMethods": "",
             },
-            "payer": {
-                "lang": "uk",
-                "emailAddress": "",
-                "showEmail": "N"
-            }
+            "payer": {"lang": "uk", "emailAddress": "", "showEmail": "N"},
         }
 
         response = self.response(payload)
-        return response['linkPayment']
+        return response["linkPayment"]
 
     def checkout_status(self):
         payload = {
-        "paymentTypes": {
-            "card": "Y",
-            "portmone": "Y",
-            "token": "N",
-            "clicktopay": "Y",
-            "createtokenonly": "N"
-        },
-         "payee": {
-            "payeeId": self.payee_id,
-            "login": self.login,
-            "dt": "",
-            "signature": "",
-            "shopSiteId": ""
-          },
-         "order": {
-             "description": self.data.get('payment_description', ''),
-             "shopOrderNumber": self.data.get('order_id'),
-             "billAmount": self.sum,
-             "attribute1": "",
-             "attribute2": "",
-             "attribute3": "",
-             "attribute4": "",
-             "successUrl": "",
-             "failureUrl": "",
-             "preauthFlag": "N",
-             "preauthConfirm": "",
-             "billCurrency": "UAH",
-             "expTime": "",
-             "encoding": ""
-           },
-         "token":
-           {
-             "tokenFlag": "N",
-             "returnToken": "Y",
-             "token": "",
-             "cardMask": "",
-             "otherPaymentMethods": ""
-           },
-         "payer":
-           {
-             "lang": "uk",
-             "emailAddress": "",
-             "showEmail": "N"
-           }
-         }
+            "paymentTypes": {
+                "card": "Y",
+                "portmone": "Y",
+                "token": "N",
+                "clicktopay": "Y",
+                "createtokenonly": "N",
+            },
+            "payee": {
+                "payeeId": self.payee_id,
+                "login": self.login,
+                "dt": "",
+                "signature": "",
+                "shopSiteId": "",
+            },
+            "order": {
+                "description": self.data.get("payment_description", ""),
+                "shopOrderNumber": self.data.get("order_id"),
+                "billAmount": self.sum,
+                "attribute1": "",
+                "attribute2": "",
+                "attribute3": "",
+                "attribute4": "",
+                "successUrl": "",
+                "failureUrl": "",
+                "preauthFlag": "N",
+                "preauthConfirm": "",
+                "billCurrency": "UAH",
+                "expTime": "",
+                "encoding": "",
+            },
+            "token": {
+                "tokenFlag": "N",
+                "returnToken": "Y",
+                "token": "",
+                "cardMask": "",
+                "otherPaymentMethods": "",
+            },
+            "payer": {"lang": "uk", "emailAddress": "", "showEmail": "N"},
+        }
 
         response = self.response(payload)
         return response.json()
 
     def return_amount(self, amount: int, order: str, message: str):
         payload = {
-                    "method": "return",
-                    "params":
-                        {
-                            "data":
-                                {
-                                    "login": self.login,
-                                    "password": self.password,
-                                    "payeeId": self.payee_id,
-                                    "shopOrderNumber": order,
-                                    "returnAmount": amount,
-                                    "message": message
-                                }
-                        },
-                    "id": "1"
-                  }
+            "method": "return",
+            "params": {
+                "data": {
+                    "login": self.login,
+                    "password": self.password,
+                    "payeeId": self.payee_id,
+                    "shopOrderNumber": order,
+                    "returnAmount": amount,
+                    "message": message,
+                }
+            },
+            "id": "1",
+        }
         response = self.response(payload)
         return response
-
