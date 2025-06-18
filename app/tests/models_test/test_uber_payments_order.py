@@ -22,8 +22,14 @@ def test_uber_payments_order(db) -> UberPaymentsOrder:
 def test_db(test_uber_payments_order):
     assert test_uber_payments_order.report_from == '2022-08-29+03:00'
     assert test_uber_payments_order.report_to == '2022-09-04+03:00'
-    assert test_uber_payments_order.report_file_name == '20220829-20220904-payments_driver-___.csv'
-    assert test_uber_payments_order.driver_uuid == '775f8943-b0ca-4079-90d3-c81d6563d0f1'
+    assert (
+        test_uber_payments_order.report_file_name
+        == '20220829-20220904-payments_driver-___.csv'
+    )
+    assert (
+        test_uber_payments_order.driver_uuid
+        == '775f8943-b0ca-4079-90d3-c81d6563d0f1'
+    )
     assert test_uber_payments_order.first_name == 'Олександр'
     assert test_uber_payments_order.last_name == 'Холін'
     assert test_uber_payments_order.total_amount == float(1643.83)
@@ -35,11 +41,20 @@ def test_db(test_uber_payments_order):
 
 
 def test_driver_id(test_uber_payments_order):
-    assert test_uber_payments_order.driver_uuid == '775f8943-b0ca-4079-90d3-c81d6563d0f1'
+    assert (
+        test_uber_payments_order.driver_uuid
+        == '775f8943-b0ca-4079-90d3-c81d6563d0f1'
+    )
 
 
 def test_total_drivers_amount(test_uber_payments_order, rate=0.65):
-    assert round(((test_uber_payments_order.total_amount*rate)+test_uber_payments_order.total_amount_cach), 2) == 650.85
+    assert round(
+        (
+            (test_uber_payments_order.total_amount * rate)
+            + test_uber_payments_order.total_amount_cach
+        ),
+        2
+    ) == 650.85
 
 
 def test_kassa(test_uber_payments_order):
@@ -47,7 +62,10 @@ def test_kassa(test_uber_payments_order):
 
 
 def test_total_owner_amount(test_uber_payments_order, rate=0.65):
-    assert round((test_uber_payments_order.total_amount * (1-rate) - float(650.85)), 2) == -75.51
+    assert round(
+        (
+            test_uber_payments_order.total_amount
+            * (1-rate) - float(650.85)), 2) == -75.51
 
 
 def test_field_length(test_uber_payments_order):
