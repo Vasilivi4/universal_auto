@@ -1,7 +1,13 @@
 from django.db.models import Q
 from rest_framework import authentication
 
-from app.models import SummaryReport, Driver, CarEfficiency, DriverEfficiency, Vehicle
+from app.models import (
+    SummaryReport,
+    Driver,
+    CarEfficiency,
+    DriverEfficiency,
+    Vehicle
+    )
 from .permissions import IsPartnerUser, IsManagerUser, IsInvestorUser
 from api.authentication import TokenAuthentication
 
