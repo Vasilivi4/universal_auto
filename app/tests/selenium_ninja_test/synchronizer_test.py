@@ -1,6 +1,14 @@
 import pytest
 import datetime
-from app.models import Fleet, Fleets_drivers_vehicles_rate, Driver, Vehicle, Partner, AuUser, Role
+from app.models import (
+    Fleet,
+    Fleets_drivers_vehicles_rate,
+    Driver,
+    Vehicle,
+    Partner,
+    AuUser,
+    Role
+)
 from selenium_ninja.synchronizer import Synchronizer
 from django.core.exceptions import MultipleObjectsReturned
 
@@ -105,8 +113,15 @@ def test_create_driver(synchronizer, fleet, partner, vehicle, driver):
     synchronizer.create_driver(**data)
 
     fleet = Fleet.objects.get(name=fleet)
-    driver = Driver.objects.get(name=name, second_name=second_name, partner=partner.pk)
-    vehicle = Vehicle.objects.get(licence_plate=licence_plate, partner=partner.pk)
+    driver = Driver.objects.get(
+        name=name,
+        second_name=second_name,
+        partner=partner.pk
+        )
+    vehicle = Vehicle.objects.get(
+        licence_plate=licence_plate,
+        partner=partner.pk
+        )
     fleets_drivers_vehicles_rate = Fleets_drivers_vehicles_rate.objects.get(
         fleet=fleet, driver_external_id=driver_external_id, partner=partner.pk)
 
@@ -226,13 +241,20 @@ def test_get_driver_by_phone_or_email_with_phone_number(synchronizer, partner):
     phone_number = '+1234567890'
     driver = Driver.objects.create(phone_number=phone_number, partner=partner)
 
-    result = synchronizer.get_driver_by_phone_or_email(phone_number, None, partner.pk)
+    result = synchronizer.get_driver_by_phone_or_email(
+        phone_number,
+        None,
+        partner.pk
+    )
 
     assert result == driver
 
 
 @pytest.mark.django_db
-def test_get_driver_by_phone_or_email_with_multiple_matches(synchronizer, partner):
+def test_get_driver_by_phone_or_email_with_multiple_matches(
+    synchronizer,
+    partner
+):
     phone_number = '+1234567890'
     email = 'john.doe@example.com'
     name = 'Dek'
@@ -249,7 +271,7 @@ def test_get_driver_by_phone_or_email_with_multiple_matches(synchronizer, partne
                               phone_number=phone_number,
                               email=email,
                               partner=partner)
-    except:
+    except MultipleObjectsReturned:
         raise MultipleObjectsReturned
 
 
@@ -264,14 +286,56 @@ def test_synchronize(synchronizer, monkeypatch):
             self.__dict__.update(kwargs)
 
     drivers = [
-        {'fleet_name': 'Fleet1', 'driver_external_id': '12345', 'pay_cash': True, 'name': 'John', 'second_name': 'Doe',
-         'phone_number': '+1234567890', 'email': 'john.doe@example.com'},
-        {'fleet_name': 'Fleet2', 'driver_external_id': '54321', 'pay_cash': False, 'name': 'Jane', 'second_name': 'Smith',
-         'phone_number': '+9876543210', 'email': 'jane.smith@example.com'}
+        {
+            'fleet_name':
+                'Fleet1',
+                'driver_external_id':
+                    '12345',
+                    'pay_cash':
+                        True,
+                        'name':
+                            'John',
+                            'second_name':
+                                'Doe',
+                                'phone_number':
+                                    '+1234567890',
+                                    'email':
+                                        'john.doe@example.com'
+        },
+        {
+            'fleet_name':
+                'Fleet2',
+                'driver_external_id':
+                    '54321',
+                    'pay_cash':
+                        False,
+                        'name':
+                            'Jane',
+                            'second_name':
+                                'Smith',
+                                'phone_number':
+                                    '+9876543210',
+                                    'email':
+                                        'jane.smith@example.com'
+        }
     ]
     vehicles = [
-        {'licence_plate': 'ABC123', 'vehicle_name': 'Car1', 'vin_code': 'XYZ789'},
-        {'licence_plate': 'XYZ789', 'vehicle_name': 'Car2', 'vin_code': 'ABC123'}
+        {
+            'licence_plate':
+                'ABC123',
+                'vehicle_name':
+                    'Car1',
+                    'vin_code':
+                        'XYZ789'
+        },
+        {
+            'licence_plate':
+                'XYZ789',
+                'vehicle_name':
+                    'Car2',
+                    'vin_code':
+                        'ABC123'
+        }
     ]
 
     def mock_get_drivers_table():
@@ -286,10 +350,26 @@ def test_synchronize(synchronizer, monkeypatch):
     def mock_get_or_create_vehicle(**kwargs):
         return MockVehicle(**kwargs)
 
-    monkeypatch.setattr(synchronizer, 'get_drivers_table', mock_get_drivers_table)
-    monkeypatch.setattr(synchronizer, 'get_vehicles', mock_get_vehicles)
-    monkeypatch.setattr(synchronizer, 'create_driver', mock_create_driver)
-    monkeypatch.setattr(synchronizer, 'get_or_create_vehicle', mock_get_or_create_vehicle)
+    monkeypatch.setattr(
+        synchronizer,
+        'get_drivers_table',
+        mock_get_drivers_table
+    )
+    monkeypatch.setattr(
+        synchronizer,
+        'get_vehicles',
+        mock_get_vehicles
+    )
+    monkeypatch.setattr(
+        synchronizer,
+        'create_driver',
+        mock_create_driver
+    )
+    monkeypatch.setattr(
+        synchronizer,
+        'get_or_create_vehicle',
+        mock_get_or_create_vehicle
+    )
 
     synchronizer.synchronize()
 
