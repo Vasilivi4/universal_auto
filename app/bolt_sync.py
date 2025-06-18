@@ -282,7 +282,11 @@ class BoltRequest(Fleet, Synchronizer):
                         price = order["total_price"]
                     except KeyError:
                         price = 0
-                    vehicle = Vehicle.objects.get(licence_plate=order["car_reg_number"])
+                    vehicle = Vehicle.objects.get(
+                        licence_plate=order[
+                            "car_reg_number"
+                        ]
+                    )
                     data = {
                         "order_id": order["order_id"],
                         "fleet": self.name,
