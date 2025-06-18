@@ -21,7 +21,9 @@ def test_db(test_service_station):
     assert test_service_station.lat_zone == 'N'
     assert test_service_station.lon == float(03036.6892)
     assert test_service_station.lon_zone == 'E'
-    assert test_service_station.description == 'Good service station in Kyiv. Founder Залужний П.Н.'
+    assert test_service_station.description == (
+        'Good service station in Kyiv. Founder Залужний П.Н.'
+    )
 
 
 def test_field_length(test_service_station):
