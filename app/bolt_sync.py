@@ -297,7 +297,12 @@ class BoltRequest(Fleet, Synchronizer):
                         ),
                         "state": bolt_states.get(order["order_try_state"]),
                         "finish_time": finish,
-                        "payment": PaymentTypes.map_payments(order["payment_method"]),
+                        "payment": PaymentTypes.map_payments
+                        (
+                            order[
+                                "payment_method"
+                            ]
+                        ),
                         "destination": order["order_stops"][-1]["address"],
                         "vehicle": vehicle,
                         "price": price,
